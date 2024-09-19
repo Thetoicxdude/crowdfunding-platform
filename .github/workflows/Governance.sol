@@ -64,6 +64,5 @@ contract Governance {
         require(proposal.voteCount > 0, "No votes");
 
         proposal.executed = true;
-        // Execute the proposal logic here
     }
 }
