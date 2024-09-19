@@ -1,12 +1,24 @@
 crowdfunding-platform/
-├── contracts/                  # 智能合约目录
-│   ├── FundingContract.sol      # 募资与资金流动的核心合约
-│   ├── Governance.sol           # DAO治理机制合约
-│   ├── Token.sol                # 平台代币合约 (ERC-20)
-│   ├── ZKVerifier.sol           # 零知识证明合约
-│   ├── MultiSigWallet.sol       # 多重签名钱包
-│   ├── Membership.sol           # 会员系统合约
-│   └── AIRecommender.sol        # AI推荐合约（用于存储和查询用户偏好与投资数据）
+contracts/
+├── core/
+│   ├── FundingContract.sol      # 核心众筹合约（模块化设计）
+│   ├── Governance.sol           # DAO治理合约
+│   ├── Token.sol                # 平台代币合约
+│   ├── AITracker.sol            # 用户足迹跟踪与AI推荐合约
+│   └── ZKVerifier.sol           # 零知识证明验证合约
+│
+├── libraries/
+│   ├── SafeMath.sol             # 安全算数库，防止溢出
+│   ├── DataTypes.sol            # 定义项目、用户的常用结构体
+│   ├── Roles.sol                # 角色管理库
+│   └── MultiSigWallet.sol       # 多重签名钱包合约
+│
+├── membership/
+│   └── Membership.sol           # 会员系统与权限管理合约
+└── oracles/
+|   ├── PriceOracle.sol          # 价格预言机合约，用于汇率计算
+|   └── OffChainDataVerifier.sol # 链外数据验证合约，用于链外计算的推荐数据
+|
 │
 ├── migrations/                  # 部署脚本
 │   └── 1_initial_migration.js
