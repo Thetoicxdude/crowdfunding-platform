@@ -1,0 +1,83 @@
+crowdfunding-platform/
+├── contracts/                  # 智能合约目录
+│   ├── FundingContract.sol      # 募资与资金流动的核心合约
+│   ├── Governance.sol           # DAO治理机制合约
+│   ├── Token.sol                # 平台代币合约 (ERC-20)
+│   ├── ZKVerifier.sol           # 零知识证明合约
+│   ├── MultiSigWallet.sol       # 多重签名钱包
+│   ├── Membership.sol           # 会员系统合约
+│   └── AIRecommender.sol        # AI推荐合约（用于存储和查询用户偏好与投资数据）
+│
+├── migrations/                  # 部署脚本
+│   └── 1_initial_migration.js
+│
+├── scripts/                     # 自动化脚本（部署、测试等）
+│   └── deploy.js                # 合约部署脚本
+│
+├── test/                        # 智能合约测试文件
+│   ├── FundingContract.test.js
+│   ├── AIRecommender.test.js    # AI推荐合约的单元测试
+│   └── Governance.test.js
+│
+├── backend/                     # 后端服务（Node.js, Express等）
+│   ├── controllers/             # 控制器目录
+│   │   ├── authController.js     # 处理登录/注册
+│   │   ├── fundingController.js  # 募资相关逻辑
+│   │   ├── memberController.js   # 会员管理
+│   │   ├── aiRecommenderController.js  # AI推荐逻辑
+│   │   └── customerSupportController.js # 客服功能
+│   ├── models/                  # 数据库模型
+│   │   ├── User.js              # 用户模型
+│   │   ├── Project.js           # 项目模型
+│   │   ├── Member.js            # 会员模型
+│   │   ├── Recommendation.js    # 推荐数据模型（存储用户投资偏好与历史）
+│   │   └── SupportTicket.js     # 客服支持票模型
+│   ├── routes/                  # 路由目录
+│   │   ├── authRoutes.js        # 登录/注册路由
+│   │   ├── fundingRoutes.js     # 募资路由
+│   │   ├── memberRoutes.js      # 会员路由
+│   │   ├── aiRecommenderRoutes.js # AI推荐路由
+│   │   └── supportRoutes.js     # 客服路由
+│   ├── utils/                   # 工具函数
+│   │   ├── auth.js              # 认证中间件
+│   │   ├── token.js             # JWT生成与验证
+│   │   ├── aiUtils.js           # AI数据处理工具
+│   │   └── zkpUtils.js          # ZKP相关工具
+│   └── server.js                # 主服务器入口文件
+│
+├── frontend/                    # 前端项目（React, Vue等）
+│   ├── components/              # 前端组件目录
+│   │   ├── Login.js             # 登录组件
+│   │   ├── Register.js          # 注册组件
+│   │   ├── CampaignForm.js      # 募资项目创建表单
+│   │   ├── AIRecommendations.js # 个性化推荐组件
+│   │   └── MemberDashboard.js   # 会员仪表盘
+│   ├── services/                # API调用服务
+│   │   ├── authService.js       # 登录/注册服务
+│   │   ├── fundingService.js    # 募资相关服务
+│   │   ├── memberService.js     # 会员服务
+│   │   ├── aiRecommenderService.js # AI推荐服务
+│   │   └── supportService.js    # 客服服务
+│   └── App.js                   # 前端主入口文件
+│
+├── database/                    # 数据库迁移与初始化文件
+│   ├── migrations/              # 数据库迁移脚本
+│   │   └── 20230919_create_recommendations.js
+│   ├── seeds/                   # 初始数据
+│   │   └── seed_users.js        # 初始化用户数据
+│   └── db.js                    # 数据库配置文件
+│
+├── ai-models/                   # AI 模型相关目录
+│   ├── recommenderModel.py      # 推荐系统的机器学习模型
+│   ├── training/                # 模型训练脚本
+│   │   └── train.py             # 数据处理和训练脚本
+│   └── model-data/              # 训练数据和模型存储
+│       └── model.pkl            # 已训练的AI推荐模型
+│
+├── config/                      # 配置文件目录
+│   ├── config.json              # 应用程序配置
+│   └── dbConfig.js              # 数据库连接配置
+│
+├── .env                         # 环境变量配置
+├── package.json                 # Node.js 依赖管理
+└── README.md                    # 项目说明
