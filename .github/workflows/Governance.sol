@@ -1,44 +1,69 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "../libraries/Roles.sol";
+
 contract Governance {
+    using Roles for Roles.Role;
+
+    Roles.Role private admins;
+    Roles.Role private voters;
+
+    mapping(uint256 => Proposal) public proposals;
+    uint256 public proposalCount;
+
     struct Proposal {
         string description;
-        uint votesFor;
-        uint votesAgainst;
+        uint256 voteCount;
         bool executed;
     }
 
-    mapping(uint => Proposal) public proposals;
-    uint public proposalCount;
+    event ProposalCreated(uint256 indexed proposalId, string description);
+    event Voted(address indexed voter, uint256 proposalId);
 
-    function createProposal(string memory _description) external {
+    constructor() {
+        admins.add(msg.sender);
+    }
+
+    modifier onlyAdmin() {
+        require(admins.has(msg.sender), "Not an admin");
+        _;
+    }
+
+    modifier onlyVoter() {
+        require(voters.has(msg.sender), "Not a voter");
+        _;
+    }
+
+    function addVoter(address _voter) external onlyAdmin {
+        voters.add(_voter);
+    }
+
+    function createProposal(string memory _description) external onlyVoter {
         proposalCount++;
         proposals[proposalCount] = Proposal({
             description: _description,
-            votesFor: 0,
-            votesAgainst: 0,
+            voteCount: 0,
             executed: false
         });
+
+        emit ProposalCreated(proposalCount, _description);
     }
 
-    function vote(uint _proposalId, bool _support) external {
+    function vote(uint256 _proposalId) external onlyVoter {
         Proposal storage proposal = proposals[_proposalId];
         require(!proposal.executed, "Proposal already executed");
 
-        if (_support) {
-            proposal.votesFor++;
-        } else {
-            proposal.votesAgainst++;
-        }
+        proposal.voteCount++;
+        emit Voted(msg.sender, _proposalId);
     }
 
-    function executeProposal(uint _proposalId) external {
+    function executeProposal(uint256 _proposalId) external onlyAdmin {
         Proposal storage proposal = proposals[_proposalId];
-        require(!proposal.executed, "Proposal already executed");
-        require(proposal.votesFor > proposal.votesAgainst, "Proposal rejected");
+        require(!proposal.executed, "Already executed");
+        require(proposal.voteCount > 0, "No votes");
 
         proposal.executed = true;
-        // 执行提案，如修改AI模型或参数
+        // Execute the proposal logic here
     }
 }
