@@ -3,39 +3,82 @@ pragma solidity ^0.8.0;
 
 contract MultiSigWallet {
     address[] public owners;
-    uint public required;
+    uint256 public requiredApprovals;
 
     struct Transaction {
         address to;
-        uint value;
+        uint256 value;
         bool executed;
+        uint256 approvals;
     }
 
-    mapping(uint => Transaction) public transactions;
-    uint public transactionCount;
+    mapping(uint256 => Transaction) public transactions;
+    mapping(uint256 => mapping(address => bool)) public approvals;
+    uint256 public transactionCount;
 
-    constructor(address[] memory _owners, uint _required) {
+    modifier onlyOwner() {
+        require(isOwner(msg.sender), "Not owner");
+        _;
+    }
+
+    modifier notExecuted(uint256 transactionId) {
+        require(!transactions[transactionId].executed, "Already executed");
+        _;
+    }
+
+    modifier notApproved(uint256 transactionId) {
+        require(!approvals[transactionId][msg.sender], "Already approved");
+        _;
+    }
+
+    constructor(address[] memory _owners, uint256 _requiredApprovals) {
         owners = _owners;
-        required = _required;
+        requiredApprovals = _requiredApprovals;
     }
 
-    function submitTransaction(address _to, uint _value) external {
+    function isOwner(address account) public view returns (bool) {
+        for (uint256 i = 0; i < owners.length; i++) {
+            if (owners[i] == account) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function submitTransaction(address to, uint256 value) external onlyOwner {
         transactionCount++;
         transactions[transactionCount] = Transaction({
-            to: _to,
-            value: _value,
-            executed: false
+            to: to,
+            value: value,
+            executed: false,
+            approvals: 0
         });
     }
 
-    function confirmTransaction(uint _transactionId) external {
-        Transaction storage txn = transactions[_transactionId];
-        require(!txn.executed, "Transaction already executed");
+    function approveTransaction(uint256 transactionId)
+        external
+        onlyOwner
+        notApproved(transactionId)
+        notExecuted(transactionId)
+    {
+        approvals[transactionId][msg.sender] = true;
+        transactions[transactionId].approvals++;
 
-        // 验证签名
-        if (/* 满足签名数量 */) {
-            txn.executed = true;
-            payable(txn.to).transfer(txn.value);
+        if (transactions[transactionId].approvals >= requiredApprovals) {
+            executeTransaction(transactionId);
         }
     }
+
+    function executeTransaction(uint256 transactionId)
+        internal
+        notExecuted(transactionId)
+    {
+        Transaction storage txn = transactions[transactionId];
+        require(address(this).balance >= txn.value, "Insufficient balance");
+        txn.executed = true;
+        payable(txn.to).transfer(txn.value);
+    }
+
+    receive() external payable {}
 }
+
