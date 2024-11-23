@@ -1,95 +1,125 @@
 crowdfunding-platform/
-contracts/
-├── core/
-│   ├── FundingContract.sol      # 核心眾籌合約（模組化設計）
-│   ├── Governance.sol           # DAO治理合約
-│   ├── Token.sol                # 平台代幣合約
-│   ├── AITracker.sol            # 用戶足跡跟蹤與AI推薦合約
-│   └── ZKVerifier.sol           # 零知識證明驗證合約
+├── contracts/                                 # 智能合約 - 鏈上業務邏輯
+│   ├── core/                                 
+│   │   ├── FundingContract.sol               # 核心募資合約
+│   │   ├── Governance.sol                    # DAO治理
+│   │   ├── Token.sol                         # 平台代幣
+│   │   ├── RewardDistribution.sol            # 獎勵分配邏輯
+│   │   └── Vault.sol                         # 資金管理與安全代管
+│   ├── extensions/                           # 合約功能擴展
+│   │   ├── Escrow.sol                        # 資金托管
+│   │   ├── Milestone.sol                     # 募資階段管理
+│   │   └── Penalty.sol                       # 違約處理合約
+│   ├── interfaces/                           # 合約標準接口
+│   │   ├── IERC20.sol                        # ERC-20標準接口
+│   │   ├── IFundingContract.sol              # 核心募資接口
+│   │   └── IGovernance.sol                   # 治理接口
+│   ├── utils/                                # 工具合約
+│   │   ├── SafeMath.sol                      # 安全數學運算
+│   │   ├── ECDSA.sol                         # 簽名驗證
+│   │   └── TimeLock.sol                      # 解鎖管理
+│   ├── oracles/                              # 鏈上與鏈下互動
+│   │   ├── PriceOracle.sol                   # 實時價格
+│   │   └── DataOracle.sol                    # 聚合鏈下資料
+│   └── test/                                 # 合約測試
 │
-├── libraries/
-│   ├── SafeMath.sol             # 安全算數庫，防止溢出
-│   ├── DataTypes.sol            # 定義項目、用戶的常用結構體
-│   ├── Roles.sol                # 角色管理庫
-│   └── MultiSigWallet.sol       # 多重簽名錢包合約
+├── backend/                                  # 後端服務 - API與業務邏輯
+│   ├── apps/                                 
+│   │   ├── users/                            # 用戶管理
+│   │   │   ├── models.py                     # 用戶資料表
+│   │   │   ├── views.py                      # 用戶API
+│   │   │   ├── serializers.py                # 用戶序列化
+│   │   │   └── permissions.py                # 權限管理
+│   │   ├── projects/                         # 募資項目管理
+│   │   │   ├── models.py                     # 項目資料表
+│   │   │   ├── views.py                      # 項目API
+│   │   │   ├── serializers.py                # 項目序列化
+│   │   │   └── validators.py                 # 驗證邏輯
+│   │   ├── payments/                         # 支付與交易
+│   │   │   ├── gateways/                     # 第三方支付網關
+│   │   │   │   ├── stripe.py                 # Stripe接口
+│   │   │   │   └── paypal.py                 # PayPal接口
+│   │   │   ├── models.py                     # 支付模型
+│   │   │   ├── views.py                      # 支付API
+│   │   │   └── services.py                   # 支付邏輯
+│   │   ├── ai_recommendations/               # AI推薦系統
+│   │   │   ├── models.py                     # 推薦模型
+│   │   │   ├── views.py                      # 推薦API
+│   │   │   └── engine.py                     # AI推薦邏輯
+│   │   ├── messaging/                        # 即時通訊
+│   │   │   ├── models.py                     # 消息模型
+│   │   │   ├── views.py                      # 消息API
+│   │   │   └── websocket_service.py          # WebSocket邏輯
+│   │   ├── analytics/                        # 數據分析與報告
+│   │   │   ├── models.py                     # 分析數據
+│   │   │   ├── views.py                      # 報表API
+│   │   │   └── dashboard.py                  # 儀表板邏輯
+│   │   ├── notifications/                    # 通知系統
+│   │   │   ├── models.py                     # 通知數據
+│   │   │   ├── views.py                      # 通知API
+│   │   │   └── push_service.py               # 發送邏輯
+│   │   └── governance/                       # 治理模組
+│   │       ├── models.py                     # 投票/治理資料
+│   │       ├── views.py                      # 治理API
+│   │       └── services.py                   # DAO邏輯
+│   ├── utils/                                # 工具函數與中介軟體
+│   │   ├── auth.py                           # 認證工具
+│   │   ├── encryption.py                     # 加密與簽名
+│   │   ├── validators.py                     # 全局資料驗證
+│   │   └── task_scheduler.py                 # 任務調度
+│   ├── settings/                             # 環境設定
+│   │   ├── base.py                           # 通用設定
+│   │   ├── development.py                    # 開發環境
+│   │   ├── production.py                     # 生產環境
+│   │   └── test.py                           # 測試環境
+│   ├── .env                                  # 環境變數
+│   ├── manage.py                             # Django主控
+│   └── requirements.txt                      # Python依賴
 │
-├── membership/
-│   └── Membership.sol           # 會員系統與權限管理合約
-└── oracles/
-│   ├── PriceOracle.sol          # 價格預言機合約，用於匯率計算
-│   └── OffChainDataVerifier.sol # 鏈外數據驗證合約，用於鏈外計算的推薦數據
+├── frontend/                                 # 前端 - 使用者介面
+│   ├── src/                                 
+│   │   ├── components/                      # React組件
+│   │   │   ├── Navbar.jsx                   # 導航欄
+│   │   │   ├── Footer.jsx                   # 頁尾
+│   │   │   ├── ProjectCard.jsx              # 項目卡片
+│   │   │   └── ChatWindow.jsx               # 聊天窗口
+│   │   ├── pages/                           # 頁面邏輯
+│   │   │   ├── Home.jsx                     # 首頁
+│   │   │   ├── ProjectDetail.jsx            # 項目詳情
+│   │   │   ├── Dashboard.jsx                # 分析儀表板
+│   │   │   └── UserProfile.jsx              # 用戶頁面
+│   │   ├── services/                        # 前端API調用
+│   │   │   ├── api.js                       # 通用API調用
+│   │   │   ├── auth.js                      # 認證相關邏輯
+│   │   │   └── payment.js                   # 支付API邏輯
+│   │   ├── styles/                          # CSS樣式
+│   │   │   ├── global.css                   # 全局樣式
+│   │   │   └── themes/                      # 主題樣式
+│   │   │       ├── light.css                # 明亮主題
+│   │   │       └── dark.css                 # 暗色主題
+│   │   ├── App.jsx                          # 主應用程序入口
+│   │   └── index.js                         # 主入口點
+│   ├── public/                              # 靜態資源
+│   ├── package.json                         # Node依賴
+│   └── vite.config.js                       # 前端構建配置 (Vite)
 │
-├── migrations/                  # 部署腳本
-│   └── 1_initial_migration.js
+├── tests/                                   # 測試系統
+│   ├── unit/                                # 單元測試
+│   ├── integration/                         # 整合測試
+│   ├── performance/                         # 性能測試
+│   └── e2e/                                 # 端對端測試
 │
-├── scripts/                     # 自動化腳本（部署、測試等）
-│   └── deploy.js                # 合約部署腳本
+├── deployment/                              # 部署系統
+│   ├── docker-compose.yml                   # Docker配置
+│   ├── k8s/                                 # Kubernetes配置
+│   │   ├── deployment.yaml                  # 部署邏輯
+│   │   ├── service.yaml                     # 網絡服務
+│   │   └── ingress.yaml                     # 入口控制
+│   ├── ci_cd/                               # 持續集成/部署
+│   │   ├── github_actions/                  # GitHub Actions
+│   │   └── gitlab_ci/                       # GitLab CI配置
+│   └── monitoring/                          # 監控與告警
+│       ├── prometheus_config.yaml           # Prometheus監控
+│       └── grafana_dashboards.json          # Grafana儀表板
 │
-├── test/                        # 智能合約測試文件
-│   ├── FundingContract.test.js
-│   ├── AIRecommender.test.js    # AI推薦合約的單元測試
-│   └── Governance.test.js
-│
-├── backend/                     # 後端服務（Node.js, Express等）
-│   ├── controllers/             # 控制器目錄
-│   │   ├── authController.js     # 處理登入/註冊
-│   │   ├── fundingController.js  # 募資相關邏輯
-│   │   ├── memberController.js   # 會員管理
-│   │   ├── aiRecommenderController.js  # AI推薦邏輯
-│   │   └── customerSupportController.js # 客服功能
-│   ├── models/                  # 資料庫模型
-│   │   ├── User.js              # 用戶模型
-│   │   ├── Project.js           # 項目模型
-│   │   ├── Member.js            # 會員模型
-│   │   ├── Recommendation.js    # 推薦數據模型（存儲用戶投資偏好與歷史）
-│   │   └── SupportTicket.js     # 客服支持票模型
-│   ├── routes/                  # 路由目錄
-│   │   ├── authRoutes.js        # 登入/註冊路由
-│   │   ├── fundingRoutes.js     # 募資路由
-│   │   ├── memberRoutes.js      # 會員路由
-│   │   ├── aiRecommenderRoutes.js # AI推薦路由
-│   │   └── supportRoutes.js     # 客服路由
-│   ├── utils/                   # 工具函數
-│   │   ├── auth.js              # 認證中介軟體
-│   │   ├── token.js             # JWT生成與驗證
-│   │   ├── aiUtils.js           # AI數據處理工具
-│   │   └── zkpUtils.js          # ZKP相關工具
-│   └── server.js                # 主伺服器入口文件
-│
-├── frontend/                    # 前端專案（React, Vue等）
-│   ├── components/              # 前端組件目錄
-│   │   ├── Login.js             # 登入組件
-│   │   ├── Register.js          # 註冊組件
-│   │   ├── CampaignForm.js      # 募資項目創建表單
-│   │   ├── AIRecommendations.js # 個性化推薦組件
-│   │   └── MemberDashboard.js   # 會員儀表盤
-│   ├── services/                # API調用服務
-│   │   ├── authService.js       # 登入/註冊服務
-│   │   ├── fundingService.js    # 募資相關服務
-│   │   ├── memberService.js     # 會員服務
-│   │   ├── aiRecommenderService.js # AI推薦服務
-│   │   └── supportService.js    # 客服服務
-│   └── App.js                   # 前端主入口文件
-│
-├── database/                    # 資料庫遷移與初始化文件
-│   ├── migrations/              # 資料庫遷移腳本
-│   │   └── 20230919_create_recommendations.js
-│   ├── seeds/                   # 初始數據
-│   │   └── seed_users.js        # 初始化用戶數據
-│   └── db.js                    # 資料庫配置文件
-│
-├── ai-models/                   # AI 模型相關目錄
-│   ├── recommenderModel.py      # 推薦系統的機器學習模型
-│   ├── training/                # 模型訓練腳本
-│   │   └── train.py             # 數據處理和訓練腳本
-│   └── model-data/              # 訓練數據和模型存儲
-│       └── model.pkl            # 已訓練的AI推薦模型
-│
-├── config/                      # 配置文件目錄
-│   ├── config.json              # 應用程序配置
-│   └── dbConfig.js              # 資料庫連接配置
-│
-├── .env                         # 環境變量配置
-├── package.json                 # Node.js 依賴管理
-└── README.md                    # 專案說明
-
+└── README.md                                # 專案總覽與說明
